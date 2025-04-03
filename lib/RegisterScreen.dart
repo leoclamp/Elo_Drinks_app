@@ -19,7 +19,6 @@ class RegisterScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Nome
             TextField(
               decoration: InputDecoration(
                 labelText: "Nome",
