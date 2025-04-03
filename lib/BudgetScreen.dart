@@ -13,7 +13,12 @@ class _BudgetScreenState extends State<BudgetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Criar Orçamento")),
+      backgroundColor: Color(0xFF060605),
+      appBar: AppBar(
+        title: Text("Criar Orçamento", style: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins')),
+        backgroundColor: Colors.black,
+        iconTheme: IconThemeData(color: Color(0xFFD0A74C)),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -23,18 +28,31 @@ class _BudgetScreenState extends State<BudgetScreen> {
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: "Nome do Orçamento",
-                border: OutlineInputBorder(),
+                labelStyle: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Color(0xFFD0A74C)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Color(0xFFD0A74C)),
+                ),
               ),
+              style: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
             ),
             SizedBox(height: 20),
-            Text("Selecione os Drinks:"),
+            Text("Selecione os Drinks:",
+                style: TextStyle(color: Color(0xFFD0A74C), fontSize: 18, fontFamily: 'Poppins')),
             Expanded(
               child: ListView.builder(
                 itemCount: _availableDrinks.length,
                 itemBuilder: (context, index) {
                   final drink = _availableDrinks[index];
                   return CheckboxListTile(
-                    title: Text(drink),
+                    title: Text(drink, style: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins')),
+                    checkColor: Colors.black,
+                    activeColor: Color(0xFFD0A74C),
                     value: _selectedDrinks.contains(drink),
                     onChanged: (bool? selected) {
                       setState(() {
@@ -51,6 +69,15 @@ class _BudgetScreenState extends State<BudgetScreen> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFD0A74C),
+                foregroundColor: Colors.black,
+                padding: EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 5,
+              ),
               onPressed: () {
                 if (_nameController.text.isNotEmpty && _selectedDrinks.isNotEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -63,7 +90,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                   );
                 }
               },
-              child: Text("Salvar Orçamento"),
+              child: Text("Salvar Orçamento", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
             ),
           ],
         ),
