@@ -4,14 +4,14 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF060605), // Fundo preto
+      backgroundColor: Color(0xFF060605),
       appBar: AppBar(
         title: Text(
           "Crie sua conta",
           style: TextStyle(fontFamily: 'Poppins', color: Color(0xFFD0A74C)),
         ),
         backgroundColor: Colors.black,
-        iconTheme: IconThemeData(color: Color(0xFFD0A74C)), // Ícone voltar dourado
+        iconTheme: IconThemeData(color: Color(0xFFD0A74C)), 
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -26,17 +26,16 @@ class RegisterScreen extends StatelessWidget {
                 labelStyle: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
                 border: OutlineInputBorder(),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFFD0A74C)), // Borda dourada
+                  borderSide: BorderSide(color: Color(0xFFD0A74C)), 
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFFD0A74C)), // Mesma borda ao focar
+                  borderSide: BorderSide(color: Color(0xFFD0A74C)), 
                 ),
               ),
               style: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
             ),
             SizedBox(height: 10),
 
-            // Email
             TextField(
               decoration: InputDecoration(
                 labelText: "Email",
@@ -53,7 +52,6 @@ class RegisterScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
 
-            // Senha
             TextField(
               decoration: InputDecoration(
                 labelText: "Senha",
@@ -71,14 +69,13 @@ class RegisterScreen extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            // Botão de Cadastro estilizado
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFD0A74C), // Dourado
-                foregroundColor: Colors.black, // Texto preto
+                backgroundColor: Color(0xFFD0A74C),
+                foregroundColor: Colors.black,
                 padding: EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12), // Cantos arredondados
+                  borderRadius: BorderRadius.circular(12), 
                 ),
               ),
               onPressed: () {

@@ -27,7 +27,6 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Seus botões existentes...
                 ElevatedButton(
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => BudgetScreen())),
                   style: ElevatedButton.styleFrom(
@@ -60,7 +59,6 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
-          // Botão "Sair da conta" posicionado no canto inferior esquerdo
           Positioned(
             left: 16,
             bottom: 16,

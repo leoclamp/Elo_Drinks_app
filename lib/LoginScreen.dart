@@ -13,7 +13,6 @@ class LoginScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Imagem no topo
             Center(
               child: Image.asset(
                 'assets/Login.png',
@@ -23,7 +22,6 @@ class LoginScreen extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            // Texto "Bem vindo"
             Text(
               "Bem vindo",
               textAlign: TextAlign.center,
@@ -36,7 +34,6 @@ class LoginScreen extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            // Campo Email
             TextField(
               decoration: InputDecoration(
                 labelText: "Email",
@@ -55,7 +52,6 @@ class LoginScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
 
-            // Campo Senha
             TextField(
               decoration: InputDecoration(
                 labelText: "Senha",
@@ -75,7 +71,6 @@ class LoginScreen extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            // Botão "Entrar"
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFD0A74C),
@@ -103,7 +98,6 @@ class LoginScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
 
-            // Botão "Criar uma conta" (CORRIGIDO)
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
@@ -123,9 +117,9 @@ class LoginScreen extends StatelessWidget {
               },
               child: Text(
                 "Criar uma conta",
-                style: TextStyle(  // Alterado de Poppins() para TextStyle
+                style: TextStyle(  
                   fontSize: 18,
-                  fontWeight: FontWeight.w200,  // Peso ExtraLight
+                  fontWeight: FontWeight.w200, 
                   fontFamily: 'Poppins',
                 ),
               ),
