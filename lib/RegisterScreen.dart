@@ -7,9 +7,7 @@ class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
 
   Future<void> registerUser() async {
-    print("Dentro de registerUser()");
-
-    final url = Uri.parse('http://192.168.0.100:8000/register/');
+    final url = Uri.parse('http://localhost:8000/register/');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
