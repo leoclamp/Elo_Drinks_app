@@ -1,6 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class RegisterScreen extends StatelessWidget {
+  const RegisterScreen({super.key});
+
+  Future<void> registerUser() async {
+    print("Dentro de registerUser()");
+
+    final url = Uri.parse('http://192.168.0.100:8000/register/');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'user_name': 'João',
+        'user_email': 'dasd@gmail.com',
+        'user_password': '123',
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Resposta da API: ${response.body}');
+    } else {
+      print('Erro: ${response.statusCode}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,6 +104,7 @@ class RegisterScreen extends StatelessWidget {
                 ),
               ),
               onPressed: () {
+                registerUser();
                 Navigator.pop(context);
               },
               child: Text(
