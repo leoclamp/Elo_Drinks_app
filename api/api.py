@@ -1,5 +1,6 @@
 import psycopg2
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 class Database:
@@ -50,7 +51,16 @@ database = Database()
 #print(database.user_login("jesus@deus", "123"))
 
 app = FastAPI()
-#uvicorn api.db:app --reload
+#uvicorn api.api:app --reload
+
+# Permitir o Flutter acessar a API
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # ou coloque ["http://localhost:3000"] se quiser restringir
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Modelo de dados de entrada
 class User(BaseModel):
