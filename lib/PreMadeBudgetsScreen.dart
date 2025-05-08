@@ -2,9 +2,22 @@ import 'package:flutter/material.dart';
 
 class PreMadeBudgetsScreen extends StatelessWidget {
   final List<Map<String, dynamic>> preMadeBudgets = [
-    {"name": "Festa Tropical", "drinks": ["Mojito", "Pina Colada"], "price": 100.00},
-    {"name": "Noite Mexicana", "drinks": ["Margarita", "Tequila Sunrise"], "price": 120.00},
-    {"name": "Clássicos", "drinks": ["Whiskey Sour", "Old Fashioned"], "price": 150.00},
+    {"name": "Festa da Cerveja", "drinks": ["Heineken", "Brahma", "Budweiser"], "price": 100.00},
+    {"name": "Noite da Vodka", "drinks": ["Smirnoff", "Absolut", "Grey Goose"], "price": 120.00},
+    {"name": "Ritmo do Rum", "drinks": ["Bacardi", "Havana Club", "Captain Morgan"], "price": 130.00},
+    {"name": "Giro do Gin", "drinks": ["Tanqueray", "Beefeater", "Bombay Sapphire"], "price": 140.00},
+    {"name": "Tequila Party", "drinks": ["José Cuervo", "Don Julio", "Patrón"], "price": 110.00},
+    {"name": "Clássicos de Bar", "drinks": ["Whiskey Sour", "Old Fashioned", "Negroni"], "price": 150.00},
+    {"name": "Caipirinha & Cia", "drinks": ["Cachaça 51", "Cachaça Ypióca", "Cachaça Velho Barreiro"], "price": 90.00},
+    {"name": "Caipirinha de Limão", "drinks": ["Cachaça 51", "Limão", "Açúcar"], "price": 80.00},
+    {"name": "Gin Tônica", "drinks": ["Gin Tanqueray", "Água Tônica", "Limão"], "price": 120.00},
+    {"name": "Festa do Mojito", "drinks": ["Rum", "Hortelã", "Limão", "Açúcar", "Água com gás"], "price": 100.00},
+    {"name": "Screwdriver", "drinks": ["Vodka", "Suco de Laranja"], "price": 95.00},
+    {"name": "Margarita", "drinks": ["Tequila", "Triple Sec", "Limão"], "price": 110.00},
+    {"name": "Daiquiri", "drinks": ["Rum", "Suco de Limão", "Açúcar"], "price": 105.00},
+    {"name": "Piña Colada", "drinks": ["Rum", "Leite de Coco", "Abacaxi"], "price": 120.00},
+    {"name": "Moscow Mule", "drinks": ["Vodka", "Ginger Beer", "Limão"], "price": 125.00},
+    {"name": "Mai Tai", "drinks": ["Rum", "Amaretto", "Suco de Limão", "Laranja"], "price": 135.00},
   ];
 
   @override

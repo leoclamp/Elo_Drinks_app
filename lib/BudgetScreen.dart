@@ -7,8 +7,28 @@ class BudgetScreen extends StatefulWidget {
 
 class _BudgetScreenState extends State<BudgetScreen> {
   final TextEditingController _nameController = TextEditingController();
+
+  final List<String> _availableDrinks = [
+    "Cerveja - Heineken",
+    "Cerveja - Brahma",
+    "Vodka - Smirnoff",
+    "Vodka - Absolut",
+    "Rum - Bacardi",''
+    "Rum - Havana Club",
+    "Gin - Tanqueray",
+    "Gin - Beefeater",
+    "Tequila - José Cuervo",
+    "Tequila - Don Julio",
+    "Cachaça - 51",
+    "Whisky - Johnnie Walker",
+    "Whisky - Jack Daniel’s",
+    "Energético - Red Bull",
+    "Energético - Monster",
+    "Energético - TNT",
+    "Energético - Fusion",
+  ];
+
   final List<String> _selectedDrinks = [];
-  final List<String> _availableDrinks = ["Mojito", "Margarita", "Long Island", "Pina Colada"];
 
   @override
   Widget build(BuildContext context) {

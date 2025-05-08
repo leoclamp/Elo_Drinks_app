@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'BudgetScreen.dart';
 import 'PreMadeBudgetsScreen.dart';
-import 'LoginScreen.dart';  
+import 'LoginScreen.dart';
+import 'LaborScreen.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -28,7 +29,10 @@ class HomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => BudgetScreen())),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => BudgetScreen()),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFD0A74C),
                     foregroundColor: Colors.black,
@@ -39,11 +43,24 @@ class HomeScreen extends StatelessWidget {
                       fontFamily: 'Poppins',
                     ),
                   ),
-                  child: Text("Montar Orçamento"),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.attach_money,
+                        color: Colors.black,
+                      ),
+                      SizedBox(width: 8),
+                      Text("Montar Orçamento"),
+                    ],
+                  ),
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PreMadeBudgetsScreen())),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PreMadeBudgetsScreen()),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFD0A74C),
                     foregroundColor: Colors.black,
@@ -54,11 +71,51 @@ class HomeScreen extends StatelessWidget {
                       fontFamily: 'Poppins',
                     ),
                   ),
-                  child: Text("Ver Orçamentos Pré-montados"),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.receipt_long,
+                        color: Colors.black,
+                      ),
+                      SizedBox(width: 8),
+                      Text("Ver Orçamentos Pré-montados"),
+                    ],
+                  ),
                 ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LaborScreen()),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFD0A74C),
+                    foregroundColor: Colors.black,
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    textStyle: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.work, // Ícone relacionado a trabalho
+                        color: Colors.black,
+                      ),
+                      SizedBox(width: 8),
+                      Text("Mão de Obra"),
+                    ],
+                  ),
+                )
               ],
             ),
           ),
+
+          //Botão de texto
           Positioned(
             left: 16,
             bottom: 16,
