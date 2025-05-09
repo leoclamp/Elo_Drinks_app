@@ -1,8 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'HomeScreen.dart';
 import 'RegisterScreen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController senhaController = TextEditingController();
+
+  Future<void> loginUser() async {
+    final url = Uri.parse('https://api.com/login'); // Substitua pela URL real da API
+
+    final data = {
+      'user_email': emailController.text,
+      'user_password': senhaController.text,
+    };
+
+    // JSON que está sendo enviado
+    print('Enviando JSON: ${jsonEncode(data)}');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      print('Login bem-sucedido: ${response.body}');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    } else {
+      print('Erro no login: ${response.statusCode}');
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Erro'),
+          content: Text('Email ou senha inválidos.'),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +73,6 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-
             Text(
               "Bem vindo",
               textAlign: TextAlign.center,
@@ -35,6 +86,7 @@ class LoginScreen extends StatelessWidget {
             SizedBox(height: 20),
 
             TextField(
+              controller: emailController,
               decoration: InputDecoration(
                 labelText: "Email",
                 labelStyle: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
@@ -53,6 +105,8 @@ class LoginScreen extends StatelessWidget {
             SizedBox(height: 10),
 
             TextField(
+              controller: senhaController,
+              obscureText: true,
               decoration: InputDecoration(
                 labelText: "Senha",
                 labelStyle: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
@@ -66,7 +120,6 @@ class LoginScreen extends StatelessWidget {
                   borderSide: BorderSide(color: Color(0xFFD0A74C)),
                 ),
               ),
-              obscureText: true,
               style: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
             ),
             SizedBox(height: 20),
@@ -81,12 +134,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 elevation: 5,
               ),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                );
-              },
+              onPressed: loginUser,
               child: Text(
                 "Entrar",
                 style: TextStyle(
@@ -117,9 +165,9 @@ class LoginScreen extends StatelessWidget {
               },
               child: Text(
                 "Criar uma conta",
-                style: TextStyle(  
+                style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.w200, 
+                  fontWeight: FontWeight.w200,
                   fontFamily: 'Poppins',
                 ),
               ),
