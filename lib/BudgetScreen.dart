@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class BudgetScreen extends StatefulWidget {
   @override
@@ -13,7 +15,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
     "Cerveja - Brahma",
     "Vodka - Smirnoff",
     "Vodka - Absolut",
-    "Rum - Bacardi",''
+    "Rum - Bacardi",
     "Rum - Havana Club",
     "Gin - Tanqueray",
     "Gin - Beefeater",
@@ -29,6 +31,41 @@ class _BudgetScreenState extends State<BudgetScreen> {
   ];
 
   final List<String> _selectedDrinks = [];
+
+  Future<void> _enviarOrcamento() async {
+    final budget = {
+      'nome': _nameController.text,
+      'drinksSelecionados': _selectedDrinks,
+    };
+
+    final jsonBudget = jsonEncode(budget);
+    print("JSON a ser enviado: $jsonBudget");
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://api.com/orcamento'), // Substitua pela URL real da API
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonBudget,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Orçamento enviado com sucesso!")),
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Erro ao enviar orçamento: ${response.statusCode}")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erro de conexão: $e")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,10 +137,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
               ),
               onPressed: () {
                 if (_nameController.text.isNotEmpty && _selectedDrinks.isNotEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Orçamento '${_nameController.text}' criado!")),
-                  );
-                  Navigator.pop(context);
+                  _enviarOrcamento();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Preencha todos os campos!")),
