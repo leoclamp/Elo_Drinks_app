@@ -18,7 +18,6 @@ class Database:
 
         self.cursor = self.db.cursor()
         
-
     def close(self):
         self.db.close()
         
@@ -33,7 +32,14 @@ class Database:
             return False
         
     def user_signup(self, email, password, name):
+        #Inicialmente verifica se ja há algum registro de mesmo e-mail
         try:
+            self.cursor.execute("SELECT user_email FROM teste.\"users\" WHERE user_email = '%s';"%(email))
+            response = self.cursor.fetchall()
+            
+            if response != []:
+                return False
+            
             self.cursor.execute("INSERT INTO teste.\"users\" (user_email, user_password, user_name) VALUES ('%s', '%s', '%s');"%(email, password, name))
             self.db.commit()
         except:
