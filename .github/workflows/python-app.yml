@@ -5,6 +5,20 @@ on: [push, pull_request]
 jobs:
   python_test:
     runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:13
+        ports: ['5432:5432']
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: login_teste
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout repository
@@ -20,6 +34,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest coverage pytest-html
+
+      - name: Wait Postgres start
+        run: sleep 10
 
       - name: Run tests with coverage and generate reports
         run: |
