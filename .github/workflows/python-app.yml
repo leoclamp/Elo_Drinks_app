@@ -1,0 +1,42 @@
+name: Python Tests
+
+on: [push, pull_request]
+
+jobs:
+  python_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13.1'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest coverage pytest-html
+
+      - name: Run tests with coverage and generate reports
+        run: |
+          coverage run -m pytest --html=reports/test_report.html --self-contained-html
+          coverage xml -o reports/coverage.xml
+          coverage html
+
+      - name: Upload HTML test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-html-report
+          path: reports/test_report.html
+
+      - name: Upload coverage report (XML and HTML)
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            reports/coverage.xml
+            htmlcov/
