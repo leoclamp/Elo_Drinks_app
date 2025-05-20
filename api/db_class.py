@@ -46,3 +46,19 @@ class Database:
             return False
         
         return True
+    
+    def get_all_drinks(self):
+        self.cursor.execute("SELECT * FROM teste.\"drinks\"")
+        response = self.cursor.fetchall()
+        
+        return response
+    
+    def get_premade_budgets(self):
+        self.cursor.execute("SELECT * FROM teste.\"premade_budgets\"")
+        response = self.cursor.fetchall()
+        
+        return response
+    
+    def insert_budget_on_person(self):
+        # TO BE IMPLEMENTED
+        pass
