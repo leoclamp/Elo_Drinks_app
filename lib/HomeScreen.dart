@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'BudgetScreen.dart';
 import 'PreMadeBudgetsScreen.dart';
 import 'LoginScreen.dart';
-import 'LaborScreen.dart';
+import 'BudgetLaborScreen.dart'; // Import da nova tela combinada
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -31,7 +30,7 @@ class HomeScreen extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => BudgetScreen()),
+                    MaterialPageRoute(builder: (context) => BudgetLaborScreen()),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFD0A74C),
@@ -47,11 +46,11 @@ class HomeScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        Icons.attach_money,
+                        Icons.edit_note, // Ícone que representa criação/edição
                         color: Colors.black,
                       ),
                       SizedBox(width: 8),
-                      Text("Montar Orçamento"),
+                      Text("Montar Orçamento + Mão de Obra"),
                     ],
                   ),
                 ),
@@ -83,39 +82,11 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LaborScreen()),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFD0A74C),
-                    foregroundColor: Colors.black,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    textStyle: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.work, // Ícone relacionado a trabalho
-                        color: Colors.black,
-                      ),
-                      SizedBox(width: 8),
-                      Text("Mão de Obra"),
-                    ],
-                  ),
-                )
               ],
             ),
           ),
 
-          //Botão de texto
+          // Botão de texto "Sair da conta"
           Positioned(
             left: 16,
             bottom: 16,

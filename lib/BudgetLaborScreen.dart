@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class BudgetScreen extends StatefulWidget {
+class BudgetLaborScreen extends StatefulWidget {
   @override
-  _BudgetScreenState createState() => _BudgetScreenState();
+  _BudgetLaborScreenState createState() => _BudgetLaborScreenState();
 }
 
-class _BudgetScreenState extends State<BudgetScreen> {
-  final TextEditingController _nameController = TextEditingController();
+class _BudgetLaborScreenState extends State<BudgetLaborScreen> {
+  // Variáveis mão de obra
+  final double pricePerHour = 10.0;
+  int bartenderCount = 0;
+  int waiterCount = 0;
+  int hours = 0;
 
+  // Variáveis drinks
+  final TextEditingController _nameController = TextEditingController();
   final List<String> _availableDrinks = [
     "Cerveja - Heineken",
     "Cerveja - Brahma",
@@ -29,13 +35,23 @@ class _BudgetScreenState extends State<BudgetScreen> {
     "Energético - TNT",
     "Energético - Fusion",
   ];
-
   final List<String> _selectedDrinks = [];
+
+  double get totalLaborPrice => (bartenderCount + waiterCount) * hours * pricePerHour;
+
+  double get totalPrice {
+    // Se quiser somar preço dos drinks, precisa ter preço pra cada drink, por enquanto só mão de obra
+    return totalLaborPrice;
+  }
 
   Future<void> _enviarOrcamento() async {
     final budget = {
       'nome': _nameController.text,
       'drinksSelecionados': _selectedDrinks,
+      'bartenders': bartenderCount,
+      'garcons': waiterCount,
+      'horas': hours,
+      'precoTotalMaoDeObra': totalLaborPrice,
     };
 
     final jsonBudget = jsonEncode(budget);
@@ -43,7 +59,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://api.com/orcamento'), // Substitua pela URL real da API
+        Uri.parse('https://api.com/orcamento'), // ajuste URL real aqui
         headers: {
           'Content-Type': 'application/json',
         },
@@ -72,7 +88,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
     return Scaffold(
       backgroundColor: Color(0xFF060605),
       appBar: AppBar(
-        title: Text("Criar Orçamento", style: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins')),
+        title: Text("Orçamento e Mão de Obra", style: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins')),
         backgroundColor: Colors.black,
         iconTheme: IconThemeData(color: Color(0xFFD0A74C)),
       ),
@@ -81,6 +97,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Nome orçamento
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
@@ -99,8 +116,41 @@ class _BudgetScreenState extends State<BudgetScreen> {
               style: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
             ),
             SizedBox(height: 20),
-            Text("Selecione os Drinks:",
-                style: TextStyle(color: Color(0xFFD0A74C), fontSize: 18, fontFamily: 'Poppins')),
+
+            // Controles mão de obra
+            Text("Mão de Obra", style: TextStyle(color: Color(0xFFD0A74C), fontSize: 22, fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
+            SizedBox(height: 10),
+
+            _buildCounter("Bartender", bartenderCount, () {
+              if (bartenderCount > 0) setState(() => bartenderCount--);
+            }, () {
+              setState(() => bartenderCount++);
+            }),
+
+            SizedBox(height: 10),
+
+            _buildCounter("Garçom", waiterCount, () {
+              if (waiterCount > 0) setState(() => waiterCount--);
+            }, () {
+              setState(() => waiterCount++);
+            }),
+
+            SizedBox(height: 10),
+
+            _buildCounter("Horas", hours, () {
+              if (hours > 0) setState(() => hours--);
+            }, () {
+              setState(() => hours++);
+            }),
+
+            SizedBox(height: 20),
+            Text("Preço Total Mão de Obra: R\$${totalLaborPrice.toStringAsFixed(2)}",
+                style: TextStyle(color: Color(0xFFD0A74C), fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
+
+            SizedBox(height: 20),
+
+            // Seleção de Drinks
+            Text("Selecione os Drinks:", style: TextStyle(color: Color(0xFFD0A74C), fontSize: 18, fontFamily: 'Poppins')),
             Expanded(
               child: ListView.builder(
                 itemCount: _availableDrinks.length,
@@ -124,31 +174,50 @@ class _BudgetScreenState extends State<BudgetScreen> {
                 },
               ),
             ),
-            SizedBox(height: 20),
+
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFD0A74C),
                 foregroundColor: Colors.black,
                 padding: EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 elevation: 5,
               ),
               onPressed: () {
-                if (_nameController.text.isNotEmpty && _selectedDrinks.isNotEmpty) {
-                  _enviarOrcamento();
-                } else {
+                if (_nameController.text.isEmpty || (bartenderCount == 0 && waiterCount == 0) || hours == 0 || _selectedDrinks.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Preencha todos os campos!")),
+                    SnackBar(content: Text("Preencha todos os campos e selecione pelo menos um drink e mão de obra!")),
                   );
+                  return;
                 }
+                _enviarOrcamento();
               },
               child: Text("Salvar Orçamento", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCounter(String label, int value, VoidCallback onDecrement, VoidCallback onIncrement) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: TextStyle(color: Color(0xFFD0A74C), fontSize: 18, fontFamily: 'Poppins')),
+        Row(
+          children: [
+            IconButton(icon: Icon(Icons.remove, color: Color(0xFFD0A74C)), onPressed: onDecrement),
+            Text("$value", style: TextStyle(color: Color(0xFFD0A74C), fontSize: 18, fontFamily: 'Poppins')),
+            IconButton(icon: Icon(Icons.add, color: Color(0xFFD0A74C)), onPressed: onIncrement),
+            if (label != "Horas")
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text("Preço por hora: R\$${pricePerHour.toStringAsFixed(2)}", style: TextStyle(color: Color(0xFFD0A74C), fontSize: 14, fontFamily: 'Poppins')),
+              ),
+          ],
+        ),
+      ],
     );
   }
 }
