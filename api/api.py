@@ -3,6 +3,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+DATABASE = 'elo_drinks'
+SCHEMA = 'public'
+
 class Database:
     def __init__(self):
         self.db = None
@@ -12,7 +15,7 @@ class Database:
 
     def connect(self):
         self.db = psycopg2.connect(
-            database='login_teste',
+            database=DATABASE,
             host='localhost',
             user='postgres',
             password='root',
@@ -26,7 +29,7 @@ class Database:
         self.db.close()
         
     def user_login(self, email, password):
-        self.cursor.execute("SELECT user_email, user_password FROM teste.\"users\" WHERE user_email = '%s' AND user_password = '%s';"%(email, password))
+        self.cursor.execute("SELECT user_email, user_password FROM %s.\"user\" WHERE user_email = '%s' AND user_password = '%s';"%(SCHEMA, email, password))
 
         response = self.cursor.fetchall()
         
@@ -37,7 +40,7 @@ class Database:
         
     def user_signup(self, email, password, name):
         try:
-            self.cursor.execute("INSERT INTO teste.\"users\" (user_email, user_password, user_name) VALUES ('%s', '%s', '%s');"%(email, password, name))
+            self.cursor.execute("INSERT INTO %s.\"user\" (user_email, user_password, user_name) VALUES ('%s', '%s', '%s');"%(SCHEMA, email, password, name))
             self.db.commit()
         except:
             return False
@@ -63,12 +66,22 @@ app.add_middleware(
 )
 
 # Modelo de dados de entrada
-class User(BaseModel):
+class RegisterRequest(BaseModel):
     user_name: str
     user_email: str
     user_password: str
     
+
+class LoginRequest(BaseModel):
+    user_email: str
+    user_password: str    
+    
 @app.post("/register/")
-def register_user(user: User):
+def register_user(user: RegisterRequest):
     database.user_signup(user.user_email, user.user_password, user.user_name)
     return {"mensagem": "Item criado com sucesso"}
+
+@app.post("/login/")
+def login_user(user: LoginRequest):
+    if database.user_login(user.user_email, user.user_password):
+        return {"mensagem": "Login realizado"}

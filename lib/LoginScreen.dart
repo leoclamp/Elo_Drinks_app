@@ -14,7 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController senhaController = TextEditingController();
 
   Future<void> loginUser() async {
-    final url = Uri.parse('https://api.com/login'); // Substitua pela URL real da API
+    final url = Uri.parse('http://localhost:8000/login/'); // Substitua pela URL real da API
 
     final data = {
       'user_email': emailController.text,
@@ -29,6 +29,8 @@ class _LoginScreenState extends State<LoginScreen> {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(data),
     );
+
+    print(response.body);
 
     if (response.statusCode == 200) {
       print('Login bem-sucedido: ${response.body}');

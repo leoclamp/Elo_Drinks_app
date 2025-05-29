@@ -13,7 +13,7 @@ class RegisterScreen extends StatelessWidget {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'user_name': 'João',
-        'user_email': 'dasd@gmail.com',
+        'user_email': 'teste@gmail.com',
         'user_password': '123',
       }),
     );
