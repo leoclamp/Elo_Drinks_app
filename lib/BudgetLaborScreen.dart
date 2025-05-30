@@ -59,7 +59,7 @@ class _BudgetLaborScreenState extends State<BudgetLaborScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://localhost:8000/budget'), // ajuste URL real aqui
+        Uri.parse('https://localhost:8000/budget/'), // ajuste URL real aqui
         headers: {
           'Content-Type': 'application/json',
         },

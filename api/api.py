@@ -82,7 +82,7 @@ class Database:
             return False
         
     def get_all_labors(self):
-        self.cursor.execute("SELECT * FROM %s.drink;"%(SCHEMA))
+        self.cursor.execute("SELECT * FROM %s.labor;"%(SCHEMA))
 
         response = self.cursor.fetchall()
         
@@ -92,7 +92,6 @@ class Database:
             return json_result
         else:
             return False
-        
         
     def get_pre_made_budgets(self):
         
@@ -158,6 +157,18 @@ class Database:
             return result
         else:
             return False
+        
+    def get_budget_labor(self):
+        drinks = self.get_all_drinks()
+        
+        labor = self.get_all_labors()
+        
+        response = {
+                    "drinks": drinks,
+                    "labor": labor
+                }
+        
+        return response
     
 # Conectando ao banco de dados PostgreSQL local
 database = Database()
@@ -219,6 +230,18 @@ def get_user_budgets(user: UserRequest):
 
         return response
     
+@app.get("/budget/")
+def get_budget_labor():
+    response = database.get_budget_labor()
+    
+    if response:
+        response = JSONResponse(content=response, media_type="application/json; charset=utf-8")
+        
+        return response
+    
+#print(database.get_all_drinks())    
+#print(database.get_all_labors())    
+    
 #print(get_pre_made_budgets())
 #print(database.get_pre_made_budgets())
 
@@ -226,3 +249,6 @@ def get_user_budgets(user: UserRequest):
 #print(get_user_budgets(user_mock))
 #print(database.get_user_budgets(user_mock))
     
+
+#print(get_budget_labor())
+#print(database.get_budget_labor())
