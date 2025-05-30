@@ -2,40 +2,63 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
   Future<void> registerUser() async {
-    final url = Uri.parse('http://localhost:8000/register/');
+    final url = Uri.parse('http://localhost:8000/cadastro/');
+
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        'user_name': 'João',
-        'user_email': 'teste@gmail.com',
-        'user_password': '123',
+        'user_name': nameController.text.trim(),
+        'user_email': emailController.text.trim(),
+        'user_password': passwordController.text.trim(),
       }),
     );
 
     if (response.statusCode == 200) {
-      print('Resposta da API: ${response.body}');
+      final jsonResp = jsonDecode(response.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(jsonResp['mensagem'] ?? 'Cadastro realizado')),
+      );
+      Navigator.pop(context);
     } else {
-      print('Erro: ${response.statusCode}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao cadastrar. Tente novamente.')),
+      );
     }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF060605),
+      backgroundColor: const Color(0xFF060605),
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Crie sua conta",
           style: TextStyle(fontFamily: 'Poppins', color: Color(0xFFD0A74C)),
         ),
         backgroundColor: Colors.black,
-        iconTheme: IconThemeData(color: Color(0xFFD0A74C)), 
+        iconTheme: const IconThemeData(color: Color(0xFFD0A74C)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -44,23 +67,25 @@ class RegisterScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
-              decoration: InputDecoration(
+              controller: nameController,
+              decoration: const InputDecoration(
                 labelText: "Nome",
                 labelStyle: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
                 border: OutlineInputBorder(),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFFD0A74C)), 
+                  borderSide: BorderSide(color: Color(0xFFD0A74C)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFFD0A74C)), 
+                  borderSide: BorderSide(color: Color(0xFFD0A74C)),
                 ),
               ),
-              style: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
+              style: const TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             TextField(
-              decoration: InputDecoration(
+              controller: emailController,
+              decoration: const InputDecoration(
                 labelText: "Email",
                 labelStyle: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
                 border: OutlineInputBorder(),
@@ -71,12 +96,14 @@ class RegisterScreen extends StatelessWidget {
                   borderSide: BorderSide(color: Color(0xFFD0A74C)),
                 ),
               ),
-              style: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
+              style: const TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
+              keyboardType: TextInputType.emailAddress,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             TextField(
-              decoration: InputDecoration(
+              controller: passwordController,
+              decoration: const InputDecoration(
                 labelText: "Senha",
                 labelStyle: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
                 border: OutlineInputBorder(),
@@ -88,24 +115,21 @@ class RegisterScreen extends StatelessWidget {
                 ),
               ),
               obscureText: true,
-              style: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
+              style: const TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFD0A74C),
+                backgroundColor: const Color(0xFFD0A74C),
                 foregroundColor: Colors.black,
-                padding: EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12), 
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              onPressed: () {
-                registerUser();
-                Navigator.pop(context);
-              },
-              child: Text(
+              onPressed: registerUser,
+              child: const Text(
                 "Cadastrar",
                 style: TextStyle(fontSize: 18, fontFamily: 'Poppins', fontWeight: FontWeight.bold),
               ),

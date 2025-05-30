@@ -14,46 +14,63 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController senhaController = TextEditingController();
 
   Future<void> loginUser() async {
-    final url = Uri.parse('http://localhost:8000/login/'); // Substitua pela URL real da API
+    final url = Uri.parse('http://localhost:8000/login/');
 
     final data = {
-      'user_email': emailController.text,
-      'user_password': senhaController.text,
+      'user_email': emailController.text.trim(),
+      'user_password': senhaController.text.trim(),
     };
 
-    // JSON que está sendo enviado
     print('Enviando JSON: ${jsonEncode(data)}');
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(data),
-    );
-
-    print(response.body);
-
-    if (response.statusCode == 200) {
-      print('Login bem-sucedido: ${response.body}');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
       );
-    } else {
-      print('Erro no login: ${response.statusCode}');
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: Text('Erro'),
-          content: Text('Email ou senha inválidos.'),
-          actions: [
-            TextButton(
-              child: Text('OK'),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      );
+
+      print('Status code: ${response.statusCode}');
+      print('Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse.containsKey('token')) {
+          print('Login bem-sucedido. Token: ${jsonResponse['token']}');
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        } else {
+          _showErrorDialog('Resposta inesperada do servidor.');
+        }
+      } else if (response.statusCode == 401) {
+        _showErrorDialog('Email ou senha inválidos.');
+      } else {
+        _showErrorDialog('Erro no login. Código: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao fazer login: $e');
+      _showErrorDialog('Não foi possível conectar ao servidor. Verifique sua conexão ou tente novamente.');
     }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Erro'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            child: Text('OK'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -67,6 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              SizedBox(height: 80),
               Center(
                 child: Image.asset(
                   'assets/Login.png',
