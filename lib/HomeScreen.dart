@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'PreMadeBudgetsScreen.dart';
 import 'LoginScreen.dart';
-import 'BudgetLaborScreen.dart'; // Import da nova tela combinada
+import 'BudgetLaborScreen.dart';
+import 'UserBudgetsScreen.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -45,10 +46,7 @@ class HomeScreen extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.edit_note, // Ícone que representa criação/edição
-                        color: Colors.black,
-                      ),
+                      Icon(Icons.edit_note, color: Colors.black),
                       SizedBox(width: 8),
                       Text("Montar Orçamento + Mão de Obra"),
                     ],
@@ -73,12 +71,34 @@ class HomeScreen extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.receipt_long,
-                        color: Colors.black,
-                      ),
+                      Icon(Icons.receipt_long, color: Colors.black),
                       SizedBox(width: 8),
                       Text("Ver Orçamentos Pré-montados"),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => UserBudgetsScreen()),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFD0A74C),
+                    foregroundColor: Colors.black,
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    textStyle: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.folder_shared, color: Colors.black),
+                      SizedBox(width: 8),
+                      Text("Ver Meus Orçamentos"),
                     ],
                   ),
                 ),
