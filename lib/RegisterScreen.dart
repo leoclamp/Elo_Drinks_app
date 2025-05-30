@@ -15,7 +15,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final passwordController = TextEditingController();
 
   Future<void> registerUser() async {
-    final url = Uri.parse('http://localhost:8000/cadastro/');
+    final url = Uri.parse('http://localhost:8000/register/');
 
     final response = await http.post(
       url,

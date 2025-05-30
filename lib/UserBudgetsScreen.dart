@@ -21,7 +21,7 @@ class _UserBudgetsScreenState extends State<UserBudgetsScreen> {
   Future<void> fetchUserBudgets() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/user_budgets'),
+        Uri.parse('http://localhost:8000/user_budgets/'),
       );
 
       if (response.statusCode == 200) {

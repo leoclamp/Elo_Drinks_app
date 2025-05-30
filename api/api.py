@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 DATABASE = 'elo_drinks'
 SCHEMA = 'public'
+PMB_ID = 16
 
 class Database:
     def __init__(self):
@@ -47,6 +48,26 @@ class Database:
         
         return True
     
+    def get_all_drinks(self):
+        self.cursor.execute("SELECT * FROM %s.drink;"%(SCHEMA))
+
+        response = self.cursor.fetchall()
+        
+        if response != []:
+            return True
+        else:
+            return False
+        
+    def get_pre_made_budgets(self):
+        self.cursor.execute("SELECT * FROM %s.budget WHERE user_id = %s;"%(SCHEMA, PMB_ID))
+            
+        response = self.cursor.fetchall()
+        
+        if response != []:
+            return True
+        else:
+            return False
+    
 # Conectando ao banco de dados PostgreSQL local
 database = Database()
 # Executando uma consulta SELECT
@@ -78,10 +99,17 @@ class LoginRequest(BaseModel):
     
 @app.post("/register/")
 def register_user(user: RegisterRequest):
-    database.user_signup(user.user_email, user.user_password, user.user_name)
-    return {"mensagem": "Item criado com sucesso"}
+    if database.user_signup(user.user_email, user.user_password, user.user_name):
+        return {"mensagem": "Item criado com sucesso"}
 
 @app.post("/login/")
 def login_user(user: LoginRequest):
     if database.user_login(user.user_email, user.user_password):
-        return {"mensagem": "Login realizado"}
+        return {"token": "Login realizado"}
+    
+@app.get("/pre_made_budgets/")
+def get_pre_made_budgets():
+    response = database.get_pre_made_budgets()
+    
+    print(response)
+    

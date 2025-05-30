@@ -34,18 +34,18 @@ class _LoginScreenState extends State<LoginScreen> {
       print('Body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body);
+        //final jsonResponse = jsonDecode(response.body);
 
-        if (jsonResponse.containsKey('token')) {
-          print('Login bem-sucedido. Token: ${jsonResponse['token']}');
+        //if (jsonResponse.containsKey('token')) {
+        //  print('Login bem-sucedido. Token: ${jsonResponse['token']}');
 
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen()),
           );
-        } else {
-          _showErrorDialog('Resposta inesperada do servidor.');
-        }
+        //} else {
+        //  _showErrorDialog('Resposta inesperada do servidor.');
+        //}
       } else if (response.statusCode == 401) {
         _showErrorDialog('Email ou senha inválidos.');
       } else {
