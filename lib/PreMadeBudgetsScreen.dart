@@ -23,6 +23,7 @@ class _PreMadeBudgetsScreenState extends State<PreMadeBudgetsScreen> {
   Future<void> fetchPreMadeBudgets() async {
     try {
       final response = await http.get(Uri.parse('http://localhost:8000/pre_made_budgets/'));
+      print(response.body);
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
