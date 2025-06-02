@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
-from db_class import Database
+from api.db_class import Database
     
 # Conectando ao banco de dados PostgreSQL local
 database = Database()
@@ -35,6 +35,7 @@ class UserRequest(BaseModel):
     
 @app.post("/register/")
 def register_user(user: RegisterRequest):
+    
     if database.user_signup(user.user_email, user.user_password, user.user_name):
         return {"mensagem": "Item criado com sucesso"}
 

@@ -24,7 +24,6 @@ class Database:
         )
 
         self.cursor = self.db.cursor()
-        
 
     def close(self):
         self.db.close()
@@ -57,6 +56,11 @@ class Database:
             return False
         
     def user_signup(self, email, password, name):
+        if email == None or password == None or name == None:
+            return False
+        elif len(email) == 0 or len(password) == 0 or len(name) == 0:
+            return False
+        
         try:
             self.cursor.execute("INSERT INTO %s.\"user\" (user_email, user_password, user_name) VALUES ('%s', '%s', '%s');"%(SCHEMA, email, password, name))
             self.db.commit()
