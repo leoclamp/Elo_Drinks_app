@@ -1,16 +1,13 @@
 from fastapi.testclient import TestClient
+
 from api.api import app  # importa sua API (ajuste o nome se necessário)
-from mocks import db_register_mock
+
+from mocks import api_register_user_mock  # importa o modelo de registro (ajuste o nome se necessário)
 
 client = TestClient(app)
-mock_response = db_register_mock()
 
 def test_register_user():
-    payload = {
-        "user_name": "Teste",
-        "user_email": "teste@email.com",
-        "user_password": "123456"
-    }
+    payload = api_register_user_mock()
     
     response = client.post("/register/", json=payload)
     

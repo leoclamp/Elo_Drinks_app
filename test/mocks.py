@@ -1,5 +1,5 @@
-def db_register_mock():
-    return {
-        "user_email": "guilherme@email.com",
-        "user_password": "123456",
-        "user_name": "Guilherme"}
+from api.api import RegisterRequest
+
+def api_register_user_mock():
+    r = RegisterRequest(user_name="Guilherme", user_email="teste@gmail.com", user_password="123456")
+    return r
