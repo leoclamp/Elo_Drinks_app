@@ -1,7 +1,7 @@
 import psycopg2
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, constr
 from fastapi.responses import JSONResponse
 from api.db_class import Database
     
@@ -23,8 +23,8 @@ app.add_middleware(
 # Modelo de dados de entrada
 class RegisterRequest(BaseModel):
     user_name: str
-    user_email: str
-    user_password: str
+    user_email: EmailStr
+    user_password: constr(min_length=1) # type: ignore
 
 class LoginRequest(BaseModel):
     user_email: str
@@ -38,6 +38,8 @@ def register_user(user: RegisterRequest):
     
     if database.user_signup(user.user_email, user.user_password, user.user_name):
         return {"mensagem": "Item criado com sucesso"}
+    else:
+        return {"mensagem": "Falha ao criar item"}
 
 @app.post("/login/")
 def login_user(user: LoginRequest):

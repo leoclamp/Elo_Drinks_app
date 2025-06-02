@@ -1,0 +1,5 @@
+[
+  "test/api_test.py::test_register_user",
+  "test/api_test.py::test_register_user_invalid_email",
+  "test/api_test.py::test_register_user_invalid_password"
+]

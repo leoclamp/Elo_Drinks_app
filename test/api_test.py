@@ -32,15 +32,17 @@ with patch("api.db_class.psycopg2.connect", return_value=MagicMock()):
         with patch("api.db_class.Database.user_signup", return_value=mock_register_user):
             response = client.post("/register/", json=payload)
 
-            assert response.status_code == 400
-            assert response.json() == {"mensagem": "Falha ao criar o item"}
-        
+            assert response.status_code == 422
+            assert any("email address" in err["msg"] for err in response.json()["detail"])
+
     def test_register_user_invalid_password():
         # Criando o mock da resposta
         mock_register_user = MagicMock()
         mock_register_user.mensagem = "Falha ao criar o item"
         
         payload = {"user_name": "Guilherme", "user_email": "guilherme@gmail.com", "user_password": ""}
-
-        assert response.status_code == 200
-        assert response.json() == {"mensagem": "Falha ao criar o item"}
+        
+        with patch("api.db_class.Database.user_signup", return_value=mock_register_user):
+            response = client.post("/register/", json=payload)
+            
+            assert response.status_code == 422
