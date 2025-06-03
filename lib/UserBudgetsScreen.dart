@@ -3,6 +3,17 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class UserBudgetsScreen extends StatefulWidget {
+  final bool? testIsLoading;
+  final String? testErrorMessage;
+  final List<Map<String, dynamic>>? testBudgets;
+
+  UserBudgetsScreen({
+    Key? key,
+    this.testIsLoading,
+    this.testErrorMessage,
+    this.testBudgets,
+  }) : super(key: key);
+
   @override
   _UserBudgetsScreenState createState() => _UserBudgetsScreenState();
 }
@@ -15,7 +26,15 @@ class _UserBudgetsScreenState extends State<UserBudgetsScreen> {
   @override
   void initState() {
     super.initState();
-    fetchUserBudgets();
+
+    // Se parâmetros de teste são passados, usa eles ao invés de buscar API
+    if (widget.testIsLoading != null) {
+      isLoading = widget.testIsLoading!;
+      errorMessage = widget.testErrorMessage;
+      userBudgets = widget.testBudgets ?? [];
+    } else {
+      fetchUserBudgets();
+    }
   }
 
   Future<void> fetchUserBudgets() async {
@@ -40,6 +59,7 @@ class _UserBudgetsScreenState extends State<UserBudgetsScreen> {
                 };
               }).toList();
           isLoading = false;
+          errorMessage = null;
         });
       } else {
         setState(() {

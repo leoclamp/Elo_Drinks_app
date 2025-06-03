@@ -3,7 +3,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  final Future<void> Function()?
+  onRegister; // permite injetar função para testes
+
+  const RegisterScreen({super.key, this.onRegister});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -15,28 +18,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final passwordController = TextEditingController();
 
   Future<void> registerUser() async {
+    if (widget.onRegister != null) {
+      // Chama função injetada (teste)
+      await widget.onRegister!();
+      return;
+    }
+
     final url = Uri.parse('http://localhost:8000/register/');
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'user_name': nameController.text.trim(),
-        'user_email': emailController.text.trim(),
-        'user_password': passwordController.text.trim(),
-      }),
-    );
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'user_name': nameController.text.trim(),
+          'user_email': emailController.text.trim(),
+          'user_password': passwordController.text.trim(),
+        }),
+      );
 
-    if (response.statusCode == 200) {
-      final jsonResp = jsonDecode(response.body);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(jsonResp['mensagem'] ?? 'Cadastro realizado')),
-      );
-      Navigator.pop(context);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao cadastrar. Tente novamente.')),
-      );
+      if (response.statusCode == 200) {
+        final jsonResp = jsonDecode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(jsonResp['mensagem'] ?? 'Cadastro realizado')),
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Erro ao cadastrar. Tente novamente.')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro: $e')));
     }
   }
 
@@ -70,7 +85,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: nameController,
               decoration: const InputDecoration(
                 labelText: "Nome",
-                labelStyle: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
+                labelStyle: TextStyle(
+                  color: Color(0xFFD0A74C),
+                  fontFamily: 'Poppins',
+                ),
                 border: OutlineInputBorder(),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFFD0A74C)),
@@ -79,7 +97,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   borderSide: BorderSide(color: Color(0xFFD0A74C)),
                 ),
               ),
-              style: const TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
+              style: const TextStyle(
+                color: Color(0xFFD0A74C),
+                fontFamily: 'Poppins',
+              ),
             ),
             const SizedBox(height: 10),
 
@@ -87,7 +108,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: emailController,
               decoration: const InputDecoration(
                 labelText: "Email",
-                labelStyle: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
+                labelStyle: TextStyle(
+                  color: Color(0xFFD0A74C),
+                  fontFamily: 'Poppins',
+                ),
                 border: OutlineInputBorder(),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFFD0A74C)),
@@ -96,7 +120,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   borderSide: BorderSide(color: Color(0xFFD0A74C)),
                 ),
               ),
-              style: const TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
+              style: const TextStyle(
+                color: Color(0xFFD0A74C),
+                fontFamily: 'Poppins',
+              ),
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 10),
@@ -105,7 +132,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: passwordController,
               decoration: const InputDecoration(
                 labelText: "Senha",
-                labelStyle: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
+                labelStyle: TextStyle(
+                  color: Color(0xFFD0A74C),
+                  fontFamily: 'Poppins',
+                ),
                 border: OutlineInputBorder(),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFFD0A74C)),
@@ -115,7 +145,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               obscureText: true,
-              style: const TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
+              style: const TextStyle(
+                color: Color(0xFFD0A74C),
+                fontFamily: 'Poppins',
+              ),
             ),
             const SizedBox(height: 20),
 
@@ -131,7 +164,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
               onPressed: registerUser,
               child: const Text(
                 "Cadastrar",
-                style: TextStyle(fontSize: 18, fontFamily: 'Poppins', fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
