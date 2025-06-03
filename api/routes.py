@@ -1,5 +1,6 @@
 import psycopg2
 from fastapi import FastAPI
+from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, constr
 from fastapi.responses import JSONResponse
@@ -9,7 +10,7 @@ from api.db_class import Database
 database = Database()
 
 app = FastAPI()
-#uvicorn api.api:app --reload
+#uvicorn api.routes:app --reload
 
 # Permitir o Flutter acessar a API
 app.add_middleware(
@@ -48,12 +49,14 @@ def login_user(user: LoginRequest):
     
 @app.get("/pre_made_budgets/")
 def get_pre_made_budgets():
-    response = database.get_pre_made_budgets()
+    try:
+        response = database.get_pre_made_budgets()
     
-    if response:
         response = JSONResponse(content=response, media_type="application/json; charset=utf-8")
-
+        
         return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
     
 @app.get("/user_budgets/")
 def get_user_budgets(user: UserRequest):

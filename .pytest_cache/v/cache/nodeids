@@ -1,10 +1,14 @@
 [
+  "test/api_test.py::test_pre_made_budget_empty_result",
+  "test/api_test.py::test_pre_made_budget_internal_server_error",
+  "test/api_test.py::test_pre_made_budget_success",
   "test/api_test.py::test_register_user",
   "test/api_test.py::test_register_user_invalid_email",
   "test/api_test.py::test_register_user_invalid_name",
   "test/api_test.py::test_register_user_invalid_password",
   "test/api_test.py::test_register_user_success",
   "test/api_test.py::test_register_user_sucess",
+  "test/api_test.py::test_user_login_invalid_email",
   "test/api_test.py::test_user_login_invalid_password",
   "test/api_test.py::test_user_login_success"
 ]
