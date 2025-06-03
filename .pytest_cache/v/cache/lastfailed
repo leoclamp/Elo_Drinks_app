@@ -1,1 +1,7 @@
-{}
+{
+  "test/api_test.py::test_register_user_success": true,
+  "test/api_test.py::test_register_user_invalid_email": true,
+  "test/api_test.py::test_register_user_invalid_password": true,
+  "test/api_test.py::test_register_user_invalid_name": true,
+  "test/api/api_test.py": true
+}

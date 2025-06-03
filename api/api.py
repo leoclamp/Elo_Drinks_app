@@ -22,13 +22,13 @@ app.add_middleware(
 
 # Modelo de dados de entrada
 class RegisterRequest(BaseModel):
-    user_name: str
+    user_name: constr(min_length=1) # type: ignore
     user_email: EmailStr
     user_password: constr(min_length=1) # type: ignore
 
 class LoginRequest(BaseModel):
-    user_email: str
-    user_password: str
+    user_email: constr(min_length=1) # type: ignore
+    user_password: constr(min_length=1) # type: ignore
     
 class UserRequest(BaseModel):
     user_id: int

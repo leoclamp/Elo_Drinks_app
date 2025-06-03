@@ -22,8 +22,8 @@ api/db_set.py
 .idea/
 
 # Testes
-._pycache/
-.pytest_cache/
+_pycache/
+pytest_cache/
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
