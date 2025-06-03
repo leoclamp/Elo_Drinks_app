@@ -125,6 +125,9 @@ class Database:
             return False
     
     def get_user_budgets(self, user_id):
+        if user_id <= 0:
+            return False
+        
         
         self.cursor.execute("SELECT * FROM %s.budget WHERE user_id = %s;"%(SCHEMA, user_id))
             

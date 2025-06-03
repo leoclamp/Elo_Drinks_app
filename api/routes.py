@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, constr
 from fastapi.responses import JSONResponse
-from api.db_class import Database
+from .db_class import Database
     
 # Conectando ao banco de dados PostgreSQL local
 database = Database()
@@ -58,15 +58,16 @@ def get_pre_made_budgets():
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
     
-@app.get("/user_budgets/")
+@app.post("/user_budgets/")
 def get_user_budgets(user: UserRequest):
     response = database.get_user_budgets(user.user_id)
     
-    print(response)
     if response:
         response = JSONResponse(content=response, media_type="application/json; charset=utf-8")
-
+        
         return response
+    else:
+        return {"mensagem": "Nenhum item encontrado"}
     
 @app.get("/budget/")
 def get_budget_labor():
@@ -83,8 +84,7 @@ def get_budget_labor():
 #print(get_pre_made_budgets())
 #print(database.get_pre_made_budgets())
 
-#user_mock = UserRequest(user_id=14)
-#print(get_user_budgets(user_mock))
+print(get_user_budgets(UserRequest(user_id=14)))
 #print(database.get_user_budgets(user_mock))
     
 #print(get_budget_labor())

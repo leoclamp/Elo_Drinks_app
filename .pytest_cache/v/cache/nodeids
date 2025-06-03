@@ -1,4 +1,7 @@
 [
+  "test/api_test.py::test_get_user_budget_invalid_type",
+  "test/api_test.py::test_get_user_budget_successs",
+  "test/api_test.py::test_get_user_budget_user_not_found",
   "test/api_test.py::test_pre_made_budget_empty_result",
   "test/api_test.py::test_pre_made_budget_internal_server_error",
   "test/api_test.py::test_pre_made_budget_success",
