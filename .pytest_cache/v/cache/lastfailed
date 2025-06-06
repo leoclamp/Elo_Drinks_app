@@ -1,3 +1,4 @@
 {
-  "test/api/api_test.py": true
+  "test/api/api_test.py": true,
+  "test/api_test.py::test_budgets_labor_get": true
 }

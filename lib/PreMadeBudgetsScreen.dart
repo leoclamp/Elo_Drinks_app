@@ -48,18 +48,21 @@ class _PreMadeBudgetsScreenState extends State<PreMadeBudgetsScreen> {
         final List<dynamic> data = jsonDecode(response.body);
 
         setState(() {
-          preMadeBudgets =
-              data.map<Map<String, dynamic>>((item) {
-                return {
-                  "name": item["name"],
-                  "drinks": (item["drinks"] as String).split(','),
-                  "price": item["price"].toDouble(),
-                };
-              }).toList();
-          isLoading = false;
-          errorMessage = '';
+          preMadeBudgets = data.map<Map<String, dynamic>>((item) {
+            return {
+              "name": item["name"],
+              "drinks": List<String>.from(
+                item["drinks"].map((drink) => drink["name"])
+            ),
+            "price": item["drinks"]
+                .fold(0.0, (total, drink) => total + (drink["price_per_liter"] * drink["quantity"])),
+          };
+        }).toList();
+        
+        isLoading = false;
+        errorMessage = '';
         });
-      } else {
+      }else {
         setState(() {
           errorMessage = 'Erro ao carregar orçamentos (${response.statusCode})';
           isLoading = false;

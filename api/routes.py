@@ -4,7 +4,11 @@ from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, constr
 from fastapi.responses import JSONResponse
-from .db_class import Database
+
+try:
+    from .db_class import Database
+except:
+    from db_class import Database
     
 # Conectando ao banco de dados PostgreSQL local
 database = Database()
@@ -32,6 +36,9 @@ class LoginRequest(BaseModel):
     user_password: constr(min_length=1) # type: ignore
     
 class UserRequest(BaseModel):
+    user_id: int
+    
+class BudgetRequest(BaseModel):
     user_id: int
     
 @app.post("/register/")
@@ -77,15 +84,21 @@ def get_budget_labor():
         response = JSONResponse(content=response, media_type="application/json; charset=utf-8")
         
         return response
+    else:
+        return {"mensagem": "Nenhum item encontrado"}
     
+@app.post("/budget/")
+def create_budget(budget: BudgetRequest):
+    pass
+
 #print(database.get_all_drinks())    
 #print(database.get_all_labors())    
     
 #print(get_pre_made_budgets())
 #print(database.get_pre_made_budgets())
 
-print(get_user_budgets(UserRequest(user_id=14)))
+#print(get_user_budgets(UserRequest(user_id=14)))
 #print(database.get_user_budgets(user_mock))
     
-#print(get_budget_labor())
+print(get_budget_labor())
 #print(database.get_budget_labor())

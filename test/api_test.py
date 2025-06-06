@@ -156,3 +156,39 @@ with patch("api.db_class.psycopg2.connect", return_value=MagicMock()):
         response = client.post("/user_budgets/", json=payload)
 
         assert response.status_code == 422  # Unprocessable Entity
+    
+    @pytest.mark.budget_labor    
+    def test_budgets_labor_get():
+        # Criando o mock da resposta
+        r = [{'drinks': [{'drink_id': 29, 'type': 'Cerveja', 'name': 'Brahma', 'price_per_liter': 9.0}, {'drink_id': 30, 'type': 'Cerveja', 'name': 'Heineken', 'price_per_liter': 13.0}],
+             'labor': [{'labor_id': 1, 'type': 'Garçom', 'price_per_hour': 13.14}, {'labor_id': 2, 'type': 'Bartender', 'price_per_hour': 18.32}]}]
+        mock_response = r     
+        
+        with patch("api.db_class.Database.get_budget_labor", return_value=mock_response):
+            response = client.get("/budget/")    
+
+            
+            assert response.status_code == 200
+            assert response.json() == mock_response
+            
+    @pytest.mark.budget_labor    
+    def test_budgets_labor_get_empty():
+        # Criando o mock da resposta
+        r = [{'drinks': [{'drink_id': 29, 'type': 'Cerveja', 'name': 'Brahma', 'price_per_liter': 9.0}, {'drink_id': 30, 'type': 'Cerveja', 'name': 'Heineken', 'price_per_liter': 13.0}],
+             'labor': [{'labor_id': 1, 'type': 'Garçom', 'price_per_hour': 13.14}, {'labor_id': 2, 'type': 'Bartender', 'price_per_hour': 18.32}]}]
+        mock_response = r     
+        
+        with patch("api.db_class.Database.get_budget_labor", return_value=[]):
+            response = client.get("/budget/")    
+            
+            assert response.status_code == 200
+            assert response.json() == {"mensagem": "Nenhum item encontrado"} # Espera uma lista vazia
+    
+    def test_budgets_labor_post():
+        pass
+    
+    def test_budgets_labor_post_empty():
+        pass
+    
+    def test_budgets_labor_invalid():
+        pass
