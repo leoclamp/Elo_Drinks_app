@@ -7,6 +7,15 @@ SCHEMA = 'public'
 PMB_USER_ID = 16
 PMB_BDG_ID = 5
 
+DB_CONFIG = {
+    "database": DATABASE,
+    "user": "elo_drinks_owner",
+    "password": "npg_AMeGik5Rl0QH",
+    "host": "ep-shy-base-ac3dzbd5-pooler.sa-east-1.aws.neon.tech",
+    "port": "5432",
+    "sslmode": "require"
+}
+
 class Database:
     def __init__(self):
         self.db = None
@@ -15,14 +24,7 @@ class Database:
         self.connect()
 
     def connect(self):
-        self.db = psycopg2.connect(
-            database=DATABASE,
-            host='localhost',
-            user='postgres',
-            password='root',
-            port='5432'
-        )
-
+        self.db = psycopg2.connect(**DB_CONFIG)
         self.cursor = self.db.cursor()
 
     def close(self):

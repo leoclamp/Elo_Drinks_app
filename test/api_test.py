@@ -183,12 +183,3 @@ with patch("api.db_class.psycopg2.connect", return_value=MagicMock()):
             
             assert response.status_code == 200
             assert response.json() == {"mensagem": "Nenhum item encontrado"} # Espera uma lista vazia
-    
-    def test_budgets_labor_post():
-        pass
-    
-    def test_budgets_labor_post_empty():
-        pass
-    
-    def test_budgets_labor_invalid():
-        pass
