@@ -41,40 +41,51 @@ class _UserBudgetsScreenState extends State<UserBudgetsScreen> {
   }
 
   Future<void> fetchUserBudgets() async {
-    String? userId = context.watch<UserData>().userId;
-
-    final data = {
-      'user_id': userId
-    };
-
     try {
+      String? userId = context.read<UserData>().userId;
+
+      final data = {
+        'user_id': userId
+      };
+      
       final response = await http.post(
         Uri.parse('http://localhost:8000/user_budgets/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(data),
       );
 
-      print(response.statusCode);
+      print('UserBudetScreen::POST ==> ${response.statusCode}');
       print(response.body);
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-
+      
         setState(() {
-          userBudgets =
-              data.map<Map<String, dynamic>>((item) {
-                return {
-                  "name": item["nome"],
-                  "drinks": List<String>.from(item["drinksSelecionados"]),
-                  "bartenders": item["bartenders"],
-                  "garcons": item["garcons"],
-                  "horas": item["horas"],
-                  "preco": item["precoTotalMaoDeObra"],
-                };
-              }).toList();
+          userBudgets = data.map<Map<String, dynamic>>((item) {
+            return {
+              "name": item["name"],
+      
+              // Lista de drinks no formato: "Nome (Tipo) xQuantidade"
+              "drinks": (item['drinks'] as List)
+                  .map<String>((drink) =>
+                      '${drink["name"]} (${drink["type"]}) x${drink["quantity"]}x${drink["price_per_liter"]}R\$')
+                  .toList(),
+      
+              // Soma total de bartenders na lista labor
+              "bartenders": (item['labor'] as List)
+                  .where((l) => l['type'] == 'Bartender')
+                  .fold<int>(0, (sum, l) => sum + (l['quantity'] as int)),
+      
+              // Soma total de garçons na lista labor
+              "garcons": (item['labor'] as List)
+                  .where((l) => l['type'] == 'Garçom')
+                  .fold<int>(0, (sum, l) => sum + (l['quantity'] as int)),
+            };
+          }).toList();
+      
           isLoading = false;
           errorMessage = null;
-        });
-      } else {
+        });     
+        } else {
         setState(() {
           errorMessage = 'Erro ao carregar orçamentos (${response.statusCode})';
           isLoading = false;
@@ -82,6 +93,7 @@ class _UserBudgetsScreenState extends State<UserBudgetsScreen> {
       }
     } catch (e) {
       setState(() {
+        print(e);
         errorMessage = 'Erro de conexão: $e';
         isLoading = false;
       });
@@ -148,7 +160,7 @@ class _UserBudgetsScreenState extends State<UserBudgetsScreen> {
                           ),
                           SizedBox(height: 8),
                           Text(
-                            "Drinks: ${budget['drinks'].join(', ')}",
+                            "Drinks:\n ${budget['drinks'].join('\n ')}",
                             style: TextStyle(
                               color: Color(0xFFD0A74C),
                               fontFamily: 'Poppins',
@@ -165,22 +177,6 @@ class _UserBudgetsScreenState extends State<UserBudgetsScreen> {
                             "Garçons: ${budget['garcons']}",
                             style: TextStyle(
                               color: Color(0xFFD0A74C),
-                              fontFamily: 'Poppins',
-                            ),
-                          ),
-                          Text(
-                            "Horas: ${budget['horas']}",
-                            style: TextStyle(
-                              color: Color(0xFFD0A74C),
-                              fontFamily: 'Poppins',
-                            ),
-                          ),
-                          Text(
-                            "Preço Total: R\$${budget['preco'].toStringAsFixed(2)}",
-                            style: TextStyle(
-                              color: Color(0xFFD0A74C),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
                               fontFamily: 'Poppins',
                             ),
                           ),

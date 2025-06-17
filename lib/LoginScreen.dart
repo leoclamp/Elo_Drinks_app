@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
       'user_password': senhaController.text.trim(),
     };
 
-    print('Enviando JSON: ${jsonEncode(data)}');
+    //print('Enviando JSON: ${jsonEncode(data)}');
 
     try {
       final response = await http.post(
@@ -35,16 +35,16 @@ class _LoginScreenState extends State<LoginScreen> {
         body: jsonEncode(data),
       );
 
-      print('Status code: ${response.statusCode}');
-      print('Body: ${response.body}');
+      //print('Status code: ${response.statusCode}');
+      //print('Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        final userID = jsonResponse['user_id'];
+        final userId = jsonResponse['user_id'];
 
         //if (jsonResponse.containsKey('token')) {
         //  print('Login bem-sucedido. Token: ${jsonResponse['token']}');
-          context.read<UserData>().setUserId(userID.toString());
+          context.read<UserData>().setUserId(userId.toString());
 
           Navigator.pushReplacement(
             context,

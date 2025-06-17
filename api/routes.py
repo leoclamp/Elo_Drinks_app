@@ -93,7 +93,7 @@ def get_budget_labor():
 def create_budget(budget: BudgetRequest):
     pass
 
-print(database.user_login("teste@gmail.com", "123"))
+#print(database.user_login("teste@gmail.com", "123"))
 
 #print(database.get_all_drinks())    
 #print(database.get_all_labors())    
