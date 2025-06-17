@@ -4,6 +4,11 @@ import 'dart:convert';
 import 'HomeScreen.dart';
 import 'RegisterScreen.dart';
 
+// Provider para manter o user_id
+import 'package:provider/provider.dart';
+import 'package:app_bebidas/models/UserData.dart';
+
+
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -34,10 +39,12 @@ class _LoginScreenState extends State<LoginScreen> {
       print('Body: ${response.body}');
 
       if (response.statusCode == 200) {
-        //final jsonResponse = jsonDecode(response.body);
+        final jsonResponse = jsonDecode(response.body);
+        final userID = jsonResponse['user_id'];
 
         //if (jsonResponse.containsKey('token')) {
         //  print('Login bem-sucedido. Token: ${jsonResponse['token']}');
+          context.read<UserData>().setUserId(userID.toString());
 
           Navigator.pushReplacement(
             context,

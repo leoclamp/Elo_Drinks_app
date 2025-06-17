@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:provider/provider.dart';
+import 'package:app_bebidas/models/UserData.dart';
+
 
 class UserBudgetsScreen extends StatefulWidget {
   final bool? testIsLoading;
@@ -38,11 +41,21 @@ class _UserBudgetsScreenState extends State<UserBudgetsScreen> {
   }
 
   Future<void> fetchUserBudgets() async {
+    String? userId = context.watch<UserData>().userId;
+
+    final data = {
+      'user_id': userId
+    };
+
     try {
-      final response = await http.get(
+      final response = await http.post(
         Uri.parse('http://localhost:8000/user_budgets/'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
       );
 
+      print(response.statusCode);
+      print(response.body);
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
 

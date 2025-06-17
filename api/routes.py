@@ -51,8 +51,10 @@ def register_user(user: RegisterRequest):
 
 @app.post("/login/")
 def login_user(user: LoginRequest):
-    if database.user_login(user.user_email, user.user_password):
-        return {"token": "Login realizado"}
+    response = database.user_login(user.user_email, user.user_password)
+    
+    if response:
+        return {"token": "Login realizado", "user_id": response}
     
 @app.get("/pre_made_budgets/")
 def get_pre_made_budgets():
@@ -76,7 +78,7 @@ def get_user_budgets(user: UserRequest):
     else:
         return {"mensagem": "Nenhum item encontrado"}
     
-@app.get("/budget/")
+@app.get("/budget_labor/")
 def get_budget_labor():
     response = database.get_budget_labor()
     
@@ -87,9 +89,11 @@ def get_budget_labor():
     else:
         return {"mensagem": "Nenhum item encontrado"}
     
-@app.post("/budget/")
+@app.post("/budget_labor/")
 def create_budget(budget: BudgetRequest):
     pass
+
+print(database.user_login("teste@gmail.com", "123"))
 
 #print(database.get_all_drinks())    
 #print(database.get_all_labors())    
@@ -100,5 +104,5 @@ def create_budget(budget: BudgetRequest):
 #print(get_user_budgets(UserRequest(user_id=14)))
 #print(database.get_user_budgets(user_mock))
     
-print(get_budget_labor())
+#print(get_budget_labor())
 #print(database.get_budget_labor())

@@ -48,12 +48,14 @@ class Database:
         return json_result
         
     def user_login(self, email, password):
-        self.cursor.execute("SELECT user_email, user_password FROM %s.\"user\" WHERE user_email = '%s' AND user_password = '%s';"%(SCHEMA, email, password))
+        self.cursor.execute("SELECT user_id FROM %s.\"user\" WHERE user_email = '%s' AND user_password = '%s';"%(SCHEMA, email, password))
 
         response = self.cursor.fetchall()
         
+        response = self.__response_treatment(response)
+        
         if response != []:
-            return True
+            return response[0]['user_id']
         else:
             return False
         

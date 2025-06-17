@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'LoginScreen.dart';
+import 'package:provider/provider.dart';
+import 'package:app_bebidas/models/UserData.dart';
 
 void main() {
-  runApp(DrinkApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserData()),
+      ],
+      child: DrinkApp(),
+    ),
+  );
 }
 
 class DrinkApp extends StatelessWidget {
