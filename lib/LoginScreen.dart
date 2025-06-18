@@ -59,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _showErrorDialog('Erro no login. Código: ${response.statusCode}');
       }
     } catch (e) {
-      print('Erro ao fazer login: $e');
+      //print('Erro ao fazer login: $e');
       _showErrorDialog('Não foi possível conectar ao servidor. Verifique sua conexão ou tente novamente.');
     }
   }

@@ -53,6 +53,10 @@ class BudgetRequest(BaseModel):
     drinks: List[DrinkItem]
     labors: List[LaborItem]
     hours: Annotated[int, Field(ge=1)]
+
+class DeleteBudget(BaseModel):
+    user_id: str
+    budget_id: str
     
 @app.post("/register/")
 def register_user(user: RegisterRequest):
@@ -122,6 +126,10 @@ def create_budget(budget: BudgetRequest):
         # log se quiser: print(f"Erro em create_budget: {e}")
         raise HTTPException(status_code=500, detail="Erro interno ao criar budget")
 
+@app.post("/delete_budget/")
+def delete_budget(info: DeleteBudget):
+    print("Deletar Budget")
+    return {"mensagem": "Api Return"}
 
 #print(database.user_login("teste@gmail.com", "123"))
 
