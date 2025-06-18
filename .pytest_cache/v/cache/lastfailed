@@ -14,5 +14,6 @@
   "test/api_test.py::test_get_user_budget_user_not_found": true,
   "test/api_test.py::test_get_user_budget_invalid_type": true,
   "test/api_test.py::test_budgets_labor_get": true,
-  "test/api_test.py::test_budgets_labor_get_empty": true
+  "test/api_test.py::test_budgets_labor_get_empty": true,
+  "test/api_test.py::TestClient": true
 }

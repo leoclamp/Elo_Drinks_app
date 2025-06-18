@@ -50,7 +50,6 @@ class _UserBudgetsScreenState extends State<UserBudgetsScreen> {
       );
 
       if (response.statusCode == 200) {
-        print(response.body);
         if(response.body.contains('Nenhum item encontrado')){
           setState(() {
             errorMessage = 'Nenhum dado encontrado.';
