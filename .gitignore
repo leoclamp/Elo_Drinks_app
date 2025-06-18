@@ -17,6 +17,9 @@ api/db_set.py
 /psql_backup
 /api/teste_api.py
 
+#Deprecated Screens
+lib/
+
 # IntelliJ related
 *.iml
 *.ipr

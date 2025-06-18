@@ -60,7 +60,6 @@ def login_user(user: LoginRequest):
 def get_pre_made_budgets():
     try:
         response = database.get_pre_made_budgets()
-    
         response = JSONResponse(content=response, media_type="application/json; charset=utf-8")
         
         return response
@@ -101,6 +100,7 @@ def create_budget(budget: BudgetRequest):
 #print(get_pre_made_budgets())
 #print(database.get_pre_made_budgets())
 
+#get_user_budgets(UserRequest(user_id=14))
 #print(get_user_budgets(UserRequest(user_id=14)))
 #print(database.get_user_budgets(user_mock))
     

@@ -107,21 +107,26 @@ class Database:
         result = self.__response_treatment(response)
         
         # Selecionando os drinks no budget
-        query = "SELECT * FROM %s.drink d JOIN %s.drink_on_budget dob ON d.drink_id = dob.drink_id WHERE dob.budget_id = %s"%(SCHEMA, SCHEMA, result[0]["budget_id"])
+        if result == []:
+            return False
         
-        self.cursor.execute(query)
-        drinks_on_budget = self.cursor.fetchall()
-        drinks_on_budget = self.__response_treatment(drinks_on_budget)
-        
-        # Selecionando os labors do budget
-        query = "SELECT * FROM %s.labor l JOIN %s.labor_on_budget lob ON l.labor_id = lob.labor_id WHERE lob.budget_id = %s"%(SCHEMA, SCHEMA, result[0]["budget_id"])
-        
-        self.cursor.execute(query)
-        labor_on_budget = self.cursor.fetchall()
-        labor_on_budget = self.__response_treatment(labor_on_budget)
-        
-        result[0]["drinks"] = drinks_on_budget
-        result[0]["labor"] = labor_on_budget
+        # Selecionando os drinks em cada budget
+        for index in range(len(result)):
+            query = "SELECT * FROM %s.drink d JOIN %s.drink_on_budget dob ON d.drink_id = dob.drink_id WHERE dob.budget_id = %s"%(SCHEMA, SCHEMA, result[index]["budget_id"])
+
+            self.cursor.execute(query)
+            drinks_on_budget = self.cursor.fetchall()
+            drinks_on_budget = self.__response_treatment(drinks_on_budget)
+
+            # Selecionando os labors do budget
+            query = "SELECT * FROM %s.labor l JOIN %s.labor_on_budget lob ON l.labor_id = lob.labor_id WHERE lob.budget_id = %s"%(SCHEMA, SCHEMA, result[index]["budget_id"])
+
+            self.cursor.execute(query)
+            labor_on_budget = self.cursor.fetchall()
+            labor_on_budget = self.__response_treatment(labor_on_budget)
+
+            result[index]["drinks"] = drinks_on_budget
+            result[index]["labor"] = labor_on_budget       
         
         if response != []:
             return result
@@ -132,7 +137,6 @@ class Database:
         if user_id <= 0:
             return False
         
-        
         self.cursor.execute("SELECT * FROM %s.budget WHERE user_id = %s;"%(SCHEMA, user_id))
             
         response = self.cursor.fetchall()
@@ -142,23 +146,24 @@ class Database:
         
         if result == []:
             return False
-                
-        # Selecionando os drinks no budget
-        query = "SELECT * FROM %s.drink d JOIN %s.drink_on_budget dob ON d.drink_id = dob.drink_id WHERE dob.budget_id = %s"%(SCHEMA, SCHEMA, result[0]["budget_id"])
         
-        self.cursor.execute(query)
-        drinks_on_budget = self.cursor.fetchall()
-        drinks_on_budget = self.__response_treatment(drinks_on_budget)
-        
-        # Selecionando os labors do budget
-        query = "SELECT * FROM %s.labor l JOIN %s.labor_on_budget lob ON l.labor_id = lob.labor_id WHERE lob.budget_id = %s"%(SCHEMA, SCHEMA, result[0]["budget_id"])
-        
-        self.cursor.execute(query)
-        labor_on_budget = self.cursor.fetchall()
-        labor_on_budget = self.__response_treatment(labor_on_budget)
-        
-        result[0]["drinks"] = drinks_on_budget
-        result[0]["labor"] = labor_on_budget
+        # Selecionando os drinks em cada budget
+        for index in range(len(result)):
+            query = "SELECT * FROM %s.drink d JOIN %s.drink_on_budget dob ON d.drink_id = dob.drink_id WHERE dob.budget_id = %s"%(SCHEMA, SCHEMA, result[index]["budget_id"])
+
+            self.cursor.execute(query)
+            drinks_on_budget = self.cursor.fetchall()
+            drinks_on_budget = self.__response_treatment(drinks_on_budget)
+
+            # Selecionando os labors do budget
+            query = "SELECT * FROM %s.labor l JOIN %s.labor_on_budget lob ON l.labor_id = lob.labor_id WHERE lob.budget_id = %s"%(SCHEMA, SCHEMA, result[index]["budget_id"])
+
+            self.cursor.execute(query)
+            labor_on_budget = self.cursor.fetchall()
+            labor_on_budget = self.__response_treatment(labor_on_budget)
+
+            result[index]["drinks"] = drinks_on_budget
+            result[index]["labor"] = labor_on_budget       
         
         if response != []:
             return result

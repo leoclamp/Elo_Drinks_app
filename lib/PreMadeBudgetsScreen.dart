@@ -7,7 +7,7 @@ class PreMadeBudgetsScreen extends StatefulWidget {
   final String? testErrorMessage;
   final List<Map<String, dynamic>>? testBudgets;
 
-  const PreMadeBudgetsScreen({
+  PreMadeBudgetsScreen({
     Key? key,
     this.testIsLoading,
     this.testErrorMessage,
@@ -19,50 +19,130 @@ class PreMadeBudgetsScreen extends StatefulWidget {
 }
 
 class _PreMadeBudgetsScreenState extends State<PreMadeBudgetsScreen> {
-  List<Map<String, dynamic>> preMadeBudgets = [];
+  List<Map<String, dynamic>> userBudgets = [];
   bool isLoading = true;
-  String errorMessage = '';
+  String? errorMessage;
 
   @override
   void initState() {
     super.initState();
 
     if (widget.testIsLoading != null) {
-      // Para testes, usa os valores passados
       isLoading = widget.testIsLoading!;
-      preMadeBudgets = widget.testBudgets ?? [];
-      errorMessage = widget.testErrorMessage ?? '';
+      errorMessage = widget.testErrorMessage;
+      userBudgets = widget.testBudgets ?? [];
     } else {
-      // Em execução normal, busca os dados
-      fetchPreMadeBudgets();
+      fetchUserBudgets();
     }
   }
 
-  Future<void> fetchPreMadeBudgets() async {
+  Future<void> fetchUserBudgets() async {
     try {
       final response = await http.get(
         Uri.parse('http://localhost:8000/pre_made_budgets/'),
+        headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
 
         setState(() {
-          preMadeBudgets = data.map<Map<String, dynamic>>((item) {
+          userBudgets = data.map<Map<String, dynamic>>((item) {
+            // Parse de hours de forma segura
+            int totalHours = 0;
+            final rawHours = item['hours'];
+            if (rawHours != null) {
+              if (rawHours is num) {
+                totalHours = rawHours.toInt();
+              } else {
+                totalHours = int.tryParse(rawHours.toString()) ?? 0;
+              }
+            }
+            // Cálculo total de drinks
+            double totalDrinksPrice = 0.0;
+            final drinksList = (item['drinks'] as List).map<String>((drink) {
+              final name = drink['name'];
+              final type = drink['type'];
+              final quantityNum = drink['quantity'];
+              final priceNum = drink['price_per_liter'];
+              final quantity = (quantityNum is num)
+                  ? quantityNum.toInt()
+                  : int.tryParse(quantityNum.toString()) ?? 0;
+              final pricePerLiter = (priceNum is num)
+                  ? priceNum.toDouble()
+                  : double.tryParse(priceNum.toString()) ?? 0.0;
+              totalDrinksPrice += quantity * pricePerLiter;
+              final precoStr = pricePerLiter.toStringAsFixed(2);
+              return '$name ($type) x$quantity - R\$${precoStr}';
+            }).toList();
+
+            // Inicializa variáveis de custo de labor e taxa horária
+            double totalLaborPrice = 0.0;
+            double totalBartenderPrice = 0.0;
+            double totalGarconPrice = 0.0;
+            double bartenderHourlyRate = 0.0;
+            double garconHourlyRate = 0.0;
+
+            // Percorre lista de labor
+            for (var l in (item['labor'] as List)) {
+              final type = l['type'];
+              final quantityNum = l['quantity'];
+              final priceNum = l['price_per_hour'];
+              final quantity = (quantityNum is num)
+                  ? quantityNum.toInt()
+                  : int.tryParse(quantityNum.toString()) ?? 0;
+              final pricePerHour = (priceNum is num)
+                  ? priceNum.toDouble()
+                  : double.tryParse(priceNum.toString()) ?? 0.0;
+
+              // Se for o primeiro Bartender, guarda a taxa horária
+              if (type == 'Bartender' && bartenderHourlyRate == 0.0) {
+                bartenderHourlyRate = pricePerHour;
+              }
+              // Se for o primeiro Garçom, guarda a taxa horária
+              if ((type == 'Garçom' || type.toString().toLowerCase().contains('garçom')) 
+                  && garconHourlyRate == 0.0) {
+                garconHourlyRate = pricePerHour;
+              }
+
+              // Custo acumulado: quantity * pricePerHour * totalHours
+              final custo = quantity * pricePerHour * totalHours;
+              totalLaborPrice += custo;
+              if (type == 'Bartender') {
+                totalBartenderPrice += custo;
+              } else if (type == 'Garçom' || type.toString().toLowerCase().contains('garçom')) {
+                totalGarconPrice += custo;
+              }
+            }
+
+            // Quantidades de cada tipo
+            final totalBartenders = (item['labor'] as List)
+                .where((l) => l['type'] == 'Bartender')
+                .fold<int>(0, (sum, l) => sum + ((l['quantity'] is num) ? (l['quantity'] as num).toInt() : int.tryParse(l['quantity'].toString()) ?? 0));
+            final totalGarcons = (item['labor'] as List)
+                .where((l) => l['type'] == 'Garçom')
+                .fold<int>(0, (sum, l) => sum + ((l['quantity'] is num) ? (l['quantity'] as num).toInt() : int.tryParse(l['quantity'].toString()) ?? 0));
+
             return {
               "name": item["name"],
-              "drinks": List<String>.from(
-                item["drinks"].map((drink) => drink["name"])
-            ),
-            "price": item["drinks"]
-                .fold(0.0, (total, drink) => total + (drink["price_per_liter"] * drink["quantity"])),
-          };
-        }).toList();
-        
-        isLoading = false;
-        errorMessage = '';
+              "hours": totalHours,
+              "drinks": drinksList,
+              "bartenders": totalBartenders,
+              "garcons": totalGarcons,
+              "bartenderHourlyRate": bartenderHourlyRate,
+              "garconHourlyRate": garconHourlyRate,
+              "totalDrinksPrice": totalDrinksPrice,
+              "totalLaborPrice": totalLaborPrice,
+              "totalBartenderPrice": totalBartenderPrice,
+              "totalGarconPrice": totalGarconPrice,
+              "totalPrice": totalDrinksPrice + totalLaborPrice,
+            };
+          }).toList();
+
+          isLoading = false;
+          errorMessage = null;
         });
-      }else {
+      } else {
         setState(() {
           errorMessage = 'Erro ao carregar orçamentos (${response.statusCode})';
           isLoading = false;
@@ -70,7 +150,8 @@ class _PreMadeBudgetsScreenState extends State<PreMadeBudgetsScreen> {
       }
     } catch (e) {
       setState(() {
-        errorMessage = 'Erro: $e';
+        print(e);
+        errorMessage = 'Erro de conexão: $e';
         isLoading = false;
       });
     }
@@ -79,82 +160,131 @@ class _PreMadeBudgetsScreenState extends State<PreMadeBudgetsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF060605),
       appBar: AppBar(
         title: Text(
-          "Orçamentos Pré-montados",
+          'Orçamentos Pré-montados',
           style: TextStyle(color: Color(0xFFD0A74C), fontFamily: 'Poppins'),
         ),
-        backgroundColor: Color(0xFF060605),
+        backgroundColor: Colors.black,
         iconTheme: IconThemeData(color: Color(0xFFD0A74C)),
       ),
-      backgroundColor: Color(0xFF060605),
-      body:
-          isLoading
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(color: Color(0xFFD0A74C)),
+            )
+          : errorMessage != null
               ? Center(
-                child: CircularProgressIndicator(color: Color(0xFFD0A74C)),
-              )
-              : errorMessage.isNotEmpty
-              ? Center(
-                child: Text(
-                  errorMessage,
-                  style: TextStyle(
-                    color: Colors.redAccent,
-                    fontFamily: 'Poppins',
+                  child: Text(
+                    errorMessage!,
+                    style: TextStyle(color: Colors.red, fontFamily: 'Poppins'),
                   ),
-                ),
-              )
-              : ListView.builder(
-                itemCount: preMadeBudgets.length,
-                itemBuilder: (context, index) {
-                  final budget = preMadeBudgets[index];
-                  return Card(
-                    color: Colors.black,
-                    margin: EdgeInsets.all(10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(color: Color(0xFFD0A74C), width: 2),
-                    ),
-                    child: ListTile(
-                      title: Text(
-                        budget["name"],
+                )
+              : userBudgets.isEmpty
+                  ? Center(
+                      child: Text(
+                        'Nenhum orçamento encontrado.',
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
                           color: Color(0xFFD0A74C),
                           fontFamily: 'Poppins',
                         ),
                       ),
-                      subtitle: Text(
-                        "Drinks: ${budget["drinks"].join(", ")}",
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                      trailing: Text(
-                        "R\$${budget["price"].toStringAsFixed(2)}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFD0A74C),
-                          fontSize: 16,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              "Orçamento '${budget["name"]}' selecionado!",
+                    )
+                  : ListView.builder(
+                      itemCount: userBudgets.length,
+                      itemBuilder: (context, index) {
+                        final budget = userBudgets[index];
+                        final totalDrinks = budget['totalDrinksPrice'] as double;
+                        final totalLabor = budget['totalLaborPrice'] as double;
+                        final total = budget['totalPrice'] as double;
+                        final hours = budget['hours'] as int;
+                        final bartenderRate = budget['bartenderHourlyRate'] as double;
+                        final garconRate = budget['garconHourlyRate'] as double;
+
+                        return Card(
+                          color: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(color: Color(0xFFD0A74C), width: 2),
+                          ),
+                          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  budget['name'],
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFD0A74C),
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  "Horas trabalhadas: $hours",
+                                  style: TextStyle(
+                                    color: Color(0xFFD0A74C),
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  "Drinks:\n ${budget['drinks'].join('\n ')}",
+                                  style: TextStyle(
+                                    color: Color(0xFFD0A74C),
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  "Preço total das bebidas: R\$${totalDrinks.toStringAsFixed(2)}",
+                                  style: TextStyle(
+                                    color: Color(0xFFD0A74C),
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                Text(
+                                  "Bartenders: ${budget['bartenders']}\t - \tR\$${bartenderRate.toStringAsFixed(2)}",
+                                  style: TextStyle(
+                                    color: Color(0xFFD0A74C),
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                                Text(
+                                  "Garçons: ${budget['garcons']}\t - \tR\$${garconRate.toStringAsFixed(2)}",
+                                  style: TextStyle(
+                                    color: Color(0xFFD0A74C),
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  "Preço total dos trabalhadores: R\$${totalLabor.toStringAsFixed(2)}",
+                                  style: TextStyle(
+                                    color: Color(0xFFD0A74C),
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                                Divider(color: Color(0xFFD0A74C)),
+                                Text(
+                                  "Preço total do atendimento: R\$${total.toStringAsFixed(2)}",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFD0A74C),
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                              ],
                             ),
-                            backgroundColor: Color(0xFFD0A74C),
-                            behavior: SnackBarBehavior.floating,
                           ),
                         );
                       },
                     ),
-                  );
-                },
-              ),
     );
   }
 }
