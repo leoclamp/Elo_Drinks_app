@@ -50,6 +50,15 @@ class _UserBudgetsScreenState extends State<UserBudgetsScreen> {
       );
 
       if (response.statusCode == 200) {
+        print(response.body);
+        if(response.body.contains('Nenhum item encontrado')){
+          setState(() {
+            errorMessage = 'Nenhum dado encontrado.';
+            isLoading = false;
+          });
+          return;
+        }
+
         final List<dynamic> data = jsonDecode(response.body);
 
         setState(() {
@@ -156,7 +165,7 @@ class _UserBudgetsScreenState extends State<UserBudgetsScreen> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        //print(e);
         errorMessage = 'Erro de conexão: $e';
         isLoading = false;
       });
