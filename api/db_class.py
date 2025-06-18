@@ -181,3 +181,84 @@ class Database:
                 }
         
         return response
+    
+    def create_budget(self, user_id: int, name: str, hours: int,
+                      drinks: list[dict], labors: list[dict]) -> int | None:
+        """
+        Insere um novo budget e associa bebidas e mão de obra.
+        Espera:
+          drinks: lista de dicts com 'drink_id' e 'quantity'
+          labors: lista de dicts com 'labor_id' e 'quantity'
+        Retorna o budget_id criado, ou None em falha.
+        """
+        try:
+            # 1) Insere na tabela principal de budgets. Ajuste nome da tabela e colunas conforme seu esquema.
+            # Exemplo de tabela: budgets(id serial primary key, user_id int references users, name text, hours int, created_at timestamp default now())
+            insert_budget = """
+                INSERT INTO %s.budget (user_id, name, hours)
+                VALUES (%s, '%s', %s)
+                RETURNING budget_id;
+            """%(SCHEMA, user_id, name, hours)
+            self.cursor.execute(insert_budget)
+            result = self.cursor.fetchone()
+            if result is None:
+                self.db.rollback()
+                return None
+            budget_id = result[0]
+            # "SELECT user_id FROM %s.\"user\" WHERE user_email = '%s' AND user_password = '%s';"%(SCHEMA, email, password)
+
+            # 2) Inserir bebidas associadas:
+            # Supondo tabela drink_on_budget(budget_id int references budgets, drink_id int references drinks, quantity int)
+            for item in drinks:
+                drink_id = item["drink_id"]
+                qty = item["quantity"]
+                insert_drink = """
+                    INSERT INTO %s.drink_on_budget (budget_id, drink_id, quantity)
+                    VALUES (%s, %s, %s);
+                """%(SCHEMA, budget_id, drink_id, qty)
+                # Opcional: verificar se drink_id existe e preço, se quiser calcular total aqui
+                self.cursor.execute(insert_drink)
+
+            # 3) Inserir labors associadas:
+            # Supondo tabela labor_on_budget(budget_id int references budgets, labor_id int references labors, quantity int)
+            for item in labors:
+                labor_id = item["labor_id"]
+                qty = item["quantity"]
+                insert_labor = """
+                    INSERT INTO %s.labor_on_budget (budget_id, labor_id, quantity)
+                    VALUES (%s, %s, %s);
+                """%(SCHEMA, budget_id, labor_id, qty)
+                self.cursor.execute(insert_labor)
+
+            # 4) Se você quiser armazenar total no banco, pode calcular aqui:
+            #    - Buscar preço de cada drink e multiplicar por quantidade
+            #    - Buscar preço por hora de cada labor, multiplicar por qty e por hours
+            # E então atualizar budget com total:
+            # Exemplo:
+            # total_drinks = 0.0
+            # for item in drinks:
+            #     self.cursor.execute("SELECT price_per_liter FROM drinks WHERE id=%s", (item["drink_id"],))
+            #     row = self.cursor.fetchone()
+            #     if row:
+            #         price = row[0]
+            #         total_drinks += price * item["quantity"]
+            # total_labors = 0.0
+            # for item in labors:
+            #     self.cursor.execute("SELECT price_per_hour FROM labors WHERE id=%s", (item["labor_id"],))
+            #     row = self.cursor.fetchone()
+            #     if row:
+            #         price_h = row[0]
+            #         total_labors += price_h * item["quantity"] * hours
+            # total_geral = total_drinks + total_labors
+            # 
+            # self.cursor.execute("UPDATE budgets SET total_drinks=%s, total_labors=%s, total_geral=%s WHERE id=%s",
+            #             (total_drinks, total_labors, total_geral, budget_id))
+
+            # 5) Commit final
+            self.db.commit()
+            return budget_id
+        except Exception as e:
+            self.db.rollback()
+            # opcional: log do erro
+            print(f"[Database.create_budget] erro: {e}")
+            return None

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter/services.dart'; // para FilteringTextInputFormatter
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart'; // para FilteringTextInputFormatter
+import 'package:app_bebidas/models/UserData.dart';
 
 // Modelos
 class Drink {
@@ -187,20 +189,17 @@ class _BudgetLaborScreenState extends State<BudgetLaborScreen> {
         .map((l) => {
               'labor_id': l.id,
               'quantity': _laborCounts[l.id],
-              'price_per_hour': l.pricePerHour,
             })
         .toList();
     final budget = {
+      'user_id': context.read<UserData>().userId,
       'name': _nameController.text,
-      'drinksSelecionados': selectedDrinksList,
+      'drinks': selectedDrinksList,
       'labors': laborList,
-      'horas': _hours,
-      'priceTotalMaoDeObra': totalLaborPrice,
-      'priceTotalDrinks': totalDrinksPrice,
-      'priceTotal': totalPrice,
+      'hours': _hours,
     };
     final jsonBudget = jsonEncode(budget);
-    print("JSON a ser enviado: $jsonBudget");
+    //print("JSON a ser enviado: $jsonBudget");
     try {
       // Ajuste URL de POST conforme seu backend
       final response = await http.post(

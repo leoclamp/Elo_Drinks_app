@@ -1,8 +1,9 @@
 import psycopg2
 from fastapi import FastAPI
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, EmailStr, constr
+from pydantic import BaseModel, EmailStr, constr, conint, Field
+from typing import List, Annotated
 from fastapi.responses import JSONResponse
 
 try:
@@ -38,8 +39,20 @@ class LoginRequest(BaseModel):
 class UserRequest(BaseModel):
     user_id: int
     
+class DrinkItem(BaseModel):
+    drink_id: int
+    quantity: Annotated[int, Field(ge=1)]
+
+class LaborItem(BaseModel):
+    labor_id: int
+    quantity: Annotated[int, Field(ge=1)]
+
 class BudgetRequest(BaseModel):
-    user_id: int
+    name: str
+    user_id: str
+    drinks: List[DrinkItem]
+    labors: List[LaborItem]
+    hours: Annotated[int, Field(ge=1)]
     
 @app.post("/register/")
 def register_user(user: RegisterRequest):
@@ -87,10 +100,28 @@ def get_budget_labor():
         return response
     else:
         return {"mensagem": "Nenhum item encontrado"}
-    
+
 @app.post("/budget_labor/")
 def create_budget(budget: BudgetRequest):
-    pass
+    print(budget)
+    try:
+        new_id = database.create_budget(
+            user_id=int(budget.user_id),
+            name=budget.name,
+            hours=budget.hours,
+            drinks=[{"drink_id": d.drink_id, "quantity": d.quantity} for d in budget.drinks],
+            labors=[{"labor_id": l.labor_id, "quantity": l.quantity} for l in budget.labors],
+        )
+        if new_id is None:
+            # tratamento de falha interna
+            raise HTTPException(status_code=500, detail="Falha ao criar budget")
+        return {"budget_id": new_id, "message": "Budget criado com sucesso"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        # log se quiser: print(f"Erro em create_budget: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno ao criar budget")
+
 
 #print(database.user_login("teste@gmail.com", "123"))
 
