@@ -174,11 +174,9 @@ class _UserBudgetsScreenState extends State<UserBudgetsScreen> {
               }
             }
           }
-          // Identificador do orçamento: usar campo id se existir, senão name
-          final idField = map.containsKey('id') ? map['id'].toString() : map['name'].toString();
 
           return {
-            "id": idField,
+            "id": map['budget_id'].toString(),
             "name": map["name"]?.toString() ?? '',
             "hours": totalHours,
             "drinks": drinksList,

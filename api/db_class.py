@@ -262,3 +262,24 @@ class Database:
             # opcional: log do erro
             print(f"[Database.create_budget] erro: {e}")
             return None
+        
+    def delete_budget(self, user_id: int, budget_id: int) -> bool:
+        """
+        Tenta deletar o budget com given budget_id que pertença a este user_id.
+        Retorna True se excluiu (rowcount > 0), False caso não exista ou erro.
+        """
+        try:
+            # DELETE com WHERE user_id = %s AND budget_id = %s garante que só usuário dono pode excluir
+            delete_sql = f"DELETE FROM {SCHEMA}.budget WHERE budget_id = %s AND user_id = %s;"
+            self.cursor.execute(delete_sql, (budget_id, user_id))
+            if self.cursor.rowcount == 0:
+                # Nenhum orçamento encontrado para esse user_id e budget_id
+                self.db.rollback()
+                return False
+            # Se chegou aqui, rowcount > 0, e as FKs com ON DELETE CASCADE removem drink_on_budget e labor_on_budget automaticamente
+            self.db.commit()
+            return True
+        except Exception as e:
+            self.db.rollback()
+            print(f"[Database.delete_budget] erro: {e}")
+            return False

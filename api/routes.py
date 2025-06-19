@@ -128,8 +128,16 @@ def create_budget(budget: BudgetRequest):
 
 @app.post("/delete_budget/")
 def delete_budget(info: DeleteBudget):
-    print("Deletar Budget")
-    return {"mensagem": "Api Return"}
+    # Validações básicas
+    if int(info.user_id) <= 0 or int(info.budget_id) <= 0:
+        raise HTTPException(status_code=400, detail="IDs inválidos")
+    ok = database.delete_budget(int(info.user_id), int(info.budget_id))
+    if ok:
+        return {"budget_id": int(info.budget_id), "message": "Budget deletado com sucesso"}
+    else:
+        # Pode ser porque não existia ou erro interno
+        # Se quiser diferenciar, o método poderia lançar exceção ou retornar código distinto
+        raise HTTPException(status_code=404, detail="Orçamento não encontrado ou não pertence ao usuário")
 
 #print(database.user_login("teste@gmail.com", "123"))
 
